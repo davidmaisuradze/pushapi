@@ -1,0 +1,21 @@
+stages:
+  - build
+
+build_job:
+  stage: build
+  only:
+    - master
+  script:
+    - ls -la
+    - whoami
+    - ls /var/www*
+    - DEV_HOME="/var/www/api.crazypush.com";
+    - if [ ! -d $DEV_HOME ]; then exit 1; fi
+    - PATH=${PATH}:/usr/local/bin
+    - npm install
+    - npm run build
+    - rsync -arp --exclude-from='.rsync_excludes' --delete-delay . ${DEV_HOME}
+    - pm2 restart api
+
+
+
